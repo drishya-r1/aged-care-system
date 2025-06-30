@@ -14,16 +14,14 @@ def generate_temp_password(length=8):
 def onboard_resident():
     data = request.get_json()
     temp_password = generate_temp_password()
-    # 1. Add to users.xlsx
     user_data = {
         'userid': data['userid'],
         'username': data['username'],
         'usertype': 'RES',
-        'password': temp_password,
+        'password': temp_password,  # Will be hashed in excel_manager
         'logged_in_status': False
     }
     excel_manager.add_user(user_data)
-    # 2. Add to residents.xlsx
     resident_data = {
         'resident_id': data['resident_id'],
         'userid': data['userid'],
@@ -44,9 +42,9 @@ def onboard_nurse():
     temp_password = generate_temp_password()
     user_data = {
         'userid': data['userid'],
-        'username': data['name'],  # or another username field if you have one
+        'username': data['name'],
         'usertype': 'NUR',
-        'password': temp_password,
+        'password': temp_password,  # Will be hashed in excel_manager
         'logged_in_status': False
     }
     excel_manager.add_user(user_data)
@@ -151,7 +149,6 @@ def reset_user_password():
     username = data.get('username')
     if not username:
         return jsonify({'success': False, 'message': 'Username required'})
-    # Call helper function in excel_manager to reset password
     temp_password = generate_temp_password()
     success = excel_manager.reset_user_password_by_username(username, temp_password)
     if success:

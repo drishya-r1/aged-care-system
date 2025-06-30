@@ -2,6 +2,7 @@ import pandas as pd
 from datetime import date
 import datetime
 import os
+import hashlib
 
 class ExcelManager:
     def __init__(self, file_path):
@@ -43,7 +44,13 @@ def load_data():
 def save_data(df):
     df.to_excel(USERS_FILE, index=False)
 
+def hash_password(password):
+    return hashlib.sha256(password.encode('utf-8')).hexdigest()
+
 def add_user(user_data):
+    # Hash the password before storing
+    if 'password' in user_data:
+        user_data['password'] = hash_password(user_data['password'])
     file_path = os.path.join(DATA_DIR, 'users.xlsx')
     df = pd.read_excel(file_path) if os.path.exists(file_path) else pd.DataFrame()
     df = pd.concat([df, pd.DataFrame([user_data])], ignore_index=True)
@@ -105,7 +112,8 @@ def get_user_profiles():
 def login(username, password):
     accounts = get_accounts()
     user_profiles = get_user_profiles()
-    if username in accounts and accounts[username] == password:
+    hashed_password = hash_password(password)
+    if username in accounts and accounts[username] == hashed_password:
         user = user_profiles.get(username, {})
         if user:
             # Return username, usertype, and userid (if present)
@@ -417,7 +425,7 @@ def reset_user_password_by_username(username, new_password):
     df.columns = df.columns.str.strip()
     mask = df['username'].astype(str) == str(username)
     if mask.any():
-        df.loc[mask, 'password'] = new_password
+        df.loc[mask, 'password'] = hash_password(new_password)
         df.to_excel(file_path, index=False)
         return True
     return False
