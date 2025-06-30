@@ -91,7 +91,7 @@
             height: 40px;
             align-self: center;
         }
-        .section { display: none; max-width: 480px; margin: 0 auto; background: #fff; padding: 32px 32px 24px 32px; border-radius: 12px; box-shadow: 0 2px 16px #e0eafc; }
+        .section { display: none; max-width: 1200px; margin: 0 auto; background: #fff; padding: 32px 32px 24px 32px; border-radius: 12px; box-shadow: 0 2px 16px #e0eafc; }
         .section.active { display: block; }
         .form-row { display: flex; align-items: center; margin-bottom: 14px; gap: 16px; }
         .form-row label { min-width: 140px; font-weight: 500; color: #1976d2; }
@@ -173,6 +173,48 @@
         .cancel-btn:hover {
             background: #90a4ae;
         }
+        /* Alerts and Food Requests Table Styling */
+        #alertsTable, #foodAlertsTable {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+            background: #e3f2fd;
+            margin-bottom: 24px;
+        }
+        #foodAlertsTable {
+            background: #fffde7;
+        }
+        #alertsTable th, #alertsTable td, #foodAlertsTable th, #foodAlertsTable td {
+            border: 1.5px solid #b0bec5;
+            padding: 12px 18px;
+            font-size: 1.08em;
+            word-break: break-word;
+        }
+        #alertsTable th, #foodAlertsTable th {
+            background: #1976d2;
+            color: #fff;
+            font-weight: 600;
+        }
+        #foodAlertsTable th {
+            background: #fbc02d;
+            color: #333;
+        }
+        #alertsTable tr:nth-child(even), #foodAlertsTable tr:nth-child(even) {
+            background: #f5f7fa;
+        }
+        #alertsTable tr:hover, #foodAlertsTable tr:hover {
+            background: #e0eafc;
+        }
+        @media (max-width: 1100px) {
+            #alertsTable, #foodAlertsTable {
+                min-width: 700px;
+            }
+        }
+        @media (max-width: 800px) {
+            #alertsTable, #foodAlertsTable {
+                min-width: 400px;
+            }
+        }
         @media (max-width: 800px) {
             .admin-container { flex-direction: column; }
             .sidebar { flex-direction: row; width: 100vw; min-height: unset; padding-top: 0; }
@@ -248,6 +290,7 @@
             <button class="menu-item" id="searchResidentMenu">Search/View/Edit Resident Details</button>
             <button class="menu-item" id="searchNurseMenu">Search/View/Edit Nurse Details</button>
             <button class="menu-item" id="resetPwdMenu">Reset Password</button>
+            <button class="menu-item" id="alertsMenu">Alerts</button>
             <!-- Add more menu items here as needed -->
         </nav>
         <div class="main-content">
@@ -405,6 +448,40 @@
                 </form>
                 <div id="resetPwdResult" style="margin-top:16px;font-weight:bold;color:#388e3c;"></div>
             </div>
+            <!-- Alerts Section (default page) -->
+            <div class="section" id="alertsSection">
+                <h2 style="color:#1976d2;">Alerts</h2>
+                <div style="overflow-x:auto;">
+                    <table id="alertsTable" style="width:100%;border-collapse:collapse;background:#e3f2fd;">
+                        <thead>
+                            <tr style="background:#1976d2;color:#fff;">
+                                <th>Alert ID</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                                <th>Unit</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertsTbody"></tbody>
+                    </table>
+                </div>
+                <h2 style="margin-top:40px;color:#1976d2;">Food Requests</h2>
+                <div style="overflow-x:auto;">
+                    <table id="foodAlertsTable" style="width:100%;border-collapse:collapse;background:#fffde7;">
+                        <thead>
+                            <tr style="background:#fbc02d;color:#333;">
+                                <th>Alert ID</th>
+                                <th>Details</th>
+                                <th>Unit</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="foodAlertsTbody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     <div class="footer-ribbon">
@@ -424,51 +501,47 @@
         const editNurseSection = document.getElementById('editNurseSection');
         const resetPwdMenu = document.getElementById('resetPwdMenu');
         const resetPwdSection = document.getElementById('resetPwdSection');
+        const alertsMenu = document.getElementById('alertsMenu');
+        const alertsSection = document.getElementById('alertsSection');
+
+        // Fix: Always remove 'active' from all menu items before adding to the selected one
+        function setActiveMenu(menuBtn) {
+            document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('active'));
+            menuBtn.classList.add('active');
+        }
 
         residentMenu.onclick = function() {
             hideAllSections();
             document.getElementById('residentSection').style.display = 'block';
-            residentMenu.classList.add('active');
-            nurseMenu.classList.remove('active');
-            searchResidentMenu.classList.remove('active');
-            searchNurseMenu.classList.remove('active');
-            resetPwdMenu.classList.remove('active');
+            setActiveMenu(residentMenu);
         };
         nurseMenu.onclick = function() {
             hideAllSections();
             document.getElementById('nurseSection').style.display = 'block';
-            nurseMenu.classList.add('active');
-            residentMenu.classList.remove('active');
-            searchResidentMenu.classList.remove('active');
-            searchNurseMenu.classList.remove('active');
-            resetPwdMenu.classList.remove('active');
+            setActiveMenu(nurseMenu);
         };
         searchResidentMenu.onclick = function() {
             hideAllSections();
             document.getElementById('searchResidentSection').style.display = 'block';
-            searchResidentMenu.classList.add('active');
-            residentMenu.classList.remove('active');
-            nurseMenu.classList.remove('active');
-            searchNurseMenu.classList.remove('active');
-            resetPwdMenu.classList.remove('active');
+            setActiveMenu(searchResidentMenu);
         };
         searchNurseMenu.onclick = function() {
             hideAllSections();
             document.getElementById('searchNurseSection').style.display = 'block';
-            searchNurseMenu.classList.add('active');
-            residentMenu.classList.remove('active');
-            nurseMenu.classList.remove('active');
-            searchResidentMenu.classList.remove('active');
-            resetPwdMenu.classList.remove('active');
+            setActiveMenu(searchNurseMenu);
         };
         resetPwdMenu.onclick = function() {
             hideAllSections();
             resetPwdSection.style.display = 'block';
-            residentMenu.classList.remove('active');
-            nurseMenu.classList.remove('active');
-            searchResidentMenu.classList.remove('active');
-            searchNurseMenu.classList.remove('active');
-            resetPwdMenu.classList.add('active');
+            setActiveMenu(resetPwdMenu);
+        };
+        alertsMenu.onclick = function() {
+            hideAllSections();
+            alertsSection.style.display = 'block';
+            setActiveMenu(alertsMenu);
+            setTimeout(() => {
+                if (typeof loadAdminAlerts === 'function') loadAdminAlerts();
+            }, 0);
         };
 
         function hideAllSections() {
@@ -481,6 +554,7 @@
             document.getElementById('searchNurseResultSection').style.display = 'none';
             document.getElementById('editResidentSection').style.display = 'none';
             document.getElementById('editNurseSection').style.display = 'none';
+            document.getElementById('alertsSection').style.display = 'none';
         }
 
         // Onboard Resident
@@ -763,6 +837,53 @@
                 resultDiv.style.color = '#d32f2f';
             }
         };
+
+        window.addEventListener('DOMContentLoaded', function() {
+            // Show Alerts section by default and highlight Alerts menu
+            hideAllSections();
+            alertsSection.style.display = 'block';
+            alertsMenu.classList.add('active');
+            residentMenu.classList.remove('active');
+            nurseMenu.classList.remove('active');
+            searchResidentMenu.classList.remove('active');
+            searchNurseMenu.classList.remove('active');
+            resetPwdMenu.classList.remove('active');
+            // Load alerts
+            setTimeout(() => {
+                if (typeof loadAdminAlerts === 'function') loadAdminAlerts();
+            }, 0);
+        });
+    </script>
+    <script src="../js/admin_alerts.js"></script>
+    <script>
+        // Ensure Alerts section loads alerts on menu click and on page load
+        function hideAllSections() {
+            document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
+        }
+        // Declare these variables only once, at the top
+        const alertsSection = document.getElementById('alertsSection');
+        const alertsMenu = document.getElementById('alertsMenu');
+        const residentMenu = document.getElementById('residentMenu');
+        const nurseMenu = document.getElementById('nurseMenu');
+        const searchResidentMenu = document.getElementById('searchResidentMenu');
+        const searchNurseMenu = document.getElementById('searchNurseMenu');
+        const resetPwdMenu = document.getElementById('resetPwdMenu');
+
+        alertsMenu.addEventListener('click', function() {
+            hideAllSections();
+            alertsSection.style.display = 'block';
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            alertsMenu.classList.add('active');
+            if (typeof loadAdminAlerts === 'function') loadAdminAlerts();
+        });
+        // Only call loadAdminAlerts on page load once
+        window.addEventListener('DOMContentLoaded', function() {
+            hideAllSections();
+            alertsSection.style.display = 'block';
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            alertsMenu.classList.add('active');
+            if (typeof loadAdminAlerts === 'function') loadAdminAlerts();
+        });
     </script>
 </body>
 </html>
