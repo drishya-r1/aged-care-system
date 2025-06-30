@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(120deg, #e3e6f3 0%, #f7f8fc 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 700px;
+            margin: 48px auto;
+            background: #fff;
+            padding: 40px 36px 32px 36px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(26,35,126,0.10), 0 1.5px 4px rgba(26,35,126,0.07);
+        }
+        h1 {
+            color: #1a237e;
+            font-size: 2.3rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+        }
+        h2 {
+            color: #062360;
+            font-size: 1.3rem;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .section {
+            margin-bottom: 36px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #bec8f6;
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        .btn {
+            background: linear-gradient(90deg, #1a237e 60%, #ffd600 100%);
+            color: #fff;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 22px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(26,35,126,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #0d133d 60%, #ffe066 100%);
+            box-shadow: 0 4px 16px rgba(26,35,126,0.13);
+        }
+        ul {
+            padding-left: 0;
+            list-style: none;
+        }
+        li {
+            margin-bottom: 16px;
+            background: #f7f8fc;
+            border-radius: 8px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(26,35,126,0.03);
+        }
+        .appt-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .appt-patient {
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 2px;
+        }
+        .appt-date {
+            color: #555;
+            font-size: 0.97rem;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 18px 6vw 18px 6vw;
+            }
+            h1 {
+                font-size: 1.4rem;
+            }
+            h2 {
+                font-size: 1.1rem;
+            }
+            .btn {
+                font-size: 0.97rem;
+                padding: 9px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, Dr. {{ doctor_name }}</h1>
+        <div class="section">
+            <h2>Your Appointments</h2>
+            {% if appointments %}
+                <ul>
+                    {% for appt in appointments %}
+                        <li>
+                            <div class="appt-info">
+                                <span class="appt-patient">{{ appt.patient_name }}</span>
+                                <span class="appt-date">{{ appt.date }} at {{ appt.time }}</span>
+                            </div>
+                            <a href="/appointment/{{ appt.id }}/details" class="btn">Details</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p style="color:#888;">No upcoming appointments.</p>
+            {% endif %}
+        </div>
+        <div class="section">
+            <h2>Patient Records</h2>
+            <a href="/patients" class="btn">View All Patients</a>
+        </div>
+        <div class="section">
+            <h2>Actions</h2>
+            <a href="/logout" class="btn">Logout</a>
+        </div>
+    </div>
+</body>
+</html>

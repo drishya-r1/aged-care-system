@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resident Menu</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7faff; margin: 0; padding: 20px; }
+        h1 { color: #2a5298; }
+        #menu-list { margin-top: 20px; }
+        .menu-item { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #e0eafc; margin-bottom: 16px; padding: 16px; }
+        .menu-item h2 { margin: 0 0 8px 0; color: #1e3c72; }
+        .menu-item .desc { color: #555; }
+        .menu-item .tags { font-size: 0.9em; color: #888; margin-top: 6px; }
+        .options { margin-top: 10px; }
+        .options label { margin-right: 15px; }
+        .request-btn { margin-top: 10px; background: #2a5298; color: #fff; border: none, padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        .request-btn:hover { background: #1e3c72; }
+        .comment-box { width: 100%; margin-top: 8px; }
+        .success-msg { color: green; }
+        .error-msg { color: red; }
+        /* Modal styles */
+        #foodModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.3);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        #foodModal[style*="display: flex"] {
+            display: flex !important;
+        }
+        #foodModal > div { background:#fff; padding:32px 24px; border-radius:8px; box-shadow:0 2px 8px #aaa; text-align:center; min-width:250px; }
+        #modalMessage { margin-bottom:20px; font-size:1.2em; }
+        #modalOkBtn { padding:8px 24px; background:#2a5298; color:#fff; border:none; border-radius:4px; font-size:1em; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <h1>Today's Menu</h1>
+    <div id="menu-list"></div>
+    <div id="message"></div>
+
+    <!-- Modal Dialog -->
+    <div id="foodModal">
+        <div>
+            <div id="modalMessage">Food request submitted!!</div>
+            <button id="modalOkBtn">OK</button>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', async function() {
+    let residentId = sessionStorage.getItem('resident_id');
+    if (!residentId) {
+        try {
+            const userid = sessionStorage.getItem('userid');
+            const response = await fetch(`http://localhost:5000/api/resident/${userid}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.resident && data.resident.resident_id) {
+                    residentId = data.resident.resident_id;
+                    sessionStorage.setItem('resident_id', residentId);
+                } else {
+                    alert("Resident ID not found.");
+                    throw new Error("Resident ID not found.");
+                }
+            }
+        } catch (err) {
+            alert("Error fetching resident ID.");
+        }
+    }
+
+    async function loadMenu() {
+        const menuList = document.getElementById('menu-list');
+        menuList.innerHTML = 'Loading...';
+        try {
+            const response = await fetch(`/api/menu/${residentId}`);
+            const data = await response.json();
+            if (data.menu && data.menu.length > 0) {
+                // Group menu items by meal_type
+                const grouped = {};
+                data.menu.forEach(item => {
+                    const mealType = item.meal_type || 'Other';
+                    if (!grouped[mealType]) grouped[mealType] = [];
+                    grouped[mealType].push(item);
+                });
+
+                menuList.innerHTML = '';
+                Object.keys(grouped).forEach(mealType => {
+                    const groupDiv = document.createElement('div');
+                    groupDiv.className = 'meal-group';
+                    groupDiv.innerHTML = `<h2>${mealType}</h2>
+                        <form class="food-request-form" data-meal-type="${mealType}">
+                            <div class="menu-items">` +
+                        grouped[mealType].map(item => `
+                            <label style="display:block;margin-bottom:8px;">
+                                <input type="radio" name="menu_item_id_${mealType}" value="${item.menu_item_id}" required>
+                                <strong>${item.name}</strong> - ${item.description || ''} 
+                                <span class="tags">
+                                    Allergens: ${item.allergens || 'None'} | Suitable for: ${item.suitable_for || 'General'}
+                                </span>
+                            </label>
+                        `).join('') +
+                        `</div>
+                            <div class="options" id="options_${mealType.replace(/\s/g, '')}">
+                            </div>
+                            <textarea class="comment-box" name="comments" rows="2" placeholder="Any comments?"></textarea>
+                            <button type="submit" class="request-btn">Request This</button>
+                        </form>`;
+                    menuList.appendChild(groupDiv);
+
+                    // Add checkboxes only if mealType is not "All Time"
+                    if (mealType !== "All Time") {
+                        const optionsDiv = groupDiv.querySelector(`#options_${mealType.replace(/\s/g, '')}`);
+                        optionsDiv.innerHTML = `
+                            <label><input type="checkbox" name="extra_sauce"> Extra Sauce</label>
+                            <label><input type="checkbox" name="extra_salt"> Extra Salt</label>
+                            <label><input type="checkbox" name="no_spices"> No Spices</label>
+                        `;
+                    }
+                });
+
+                // Attach submit handlers for each form
+                document.querySelectorAll('.food-request-form').forEach(form => {
+                    form.onsubmit = async function(e) {
+                        e.preventDefault();
+                        const mealType = form.getAttribute('data-meal-type');
+                        const selectedRadio = form.querySelector(`input[type="radio"][name="menu_item_id_${mealType}"]:checked`);
+                        if (!selectedRadio) return;
+                        await sendFoodRequest(selectedRadio.value, mealType, form);
+                    };
+                });
+            } else {
+                menuList.innerHTML = '<p>No suitable menu items found for this resident.</p>';
+            }
+        } catch (err) {
+            menuList.innerHTML = '<p>Error loading menu.</p>';
+        }
+    }
+
+    async function sendFoodRequest(menu_item_id, form) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = '';
+        // Generate a random request_id for demo; in production, use a better method
+        const request_id = Math.floor(Math.random() * 1000000);
+        const today = new Date().toISOString().slice(0, 10);
+        const meal_type = "Lunch"; // Or get from user selection
+        const options = [];
+        if (form.extra_sauce.checked) options.push("Extra Sauce");
+        if (form.extra_salt.checked) options.push("Extra Salt");
+        if (form.no_spices.checked) options.push("No Spices");
+        let special_notes = options.join(', ');
+        const comments = form.comments.value.trim();
+        if (comments) {
+            special_notes += (special_notes ? '; ' : '') + comments;
+        }
+        const payload = {
+            request_id: request_id,
+            resident_id: residentId,
+            meal_date: today,
+            meal_type: meal_type,
+            menu_item_id: menu_item_id,
+            special_notes: special_notes,
+            status: "Pending"
+        };
+        try {
+            const response = await fetch('/api/foodrequest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (data.success) {
+                // Show modal on success
+                document.getElementById('modalMessage').textContent = 'Food request submitted!!';
+                document.getElementById('foodModal').style.display = 'flex';
+                // Close modal and redirect after delay
+                setTimeout(() => {
+                    document.getElementById('foodModal').style.display = 'none';
+                    window.location.href = '../html/residents_index.html';
+                }, 2000);
+            } else {
+                document.getElementById('request-message').innerHTML = `<span class="error-msg">Error: ${data.message}</span>`;
+            }
+        } catch (err) {
+            messageDiv.innerHTML = `<span class="error-msg">Error submitting request.</span>`;
+        }
+    }
+
+    // Close modal on OK button click
+    document.getElementById('modalOkBtn').onclick = function() {
+        document.getElementById('foodModal').style.display = 'none';
+    };
+
+    loadMenu();
+});
+    </script>
+</body>
+</html>

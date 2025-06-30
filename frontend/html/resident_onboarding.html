@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resident Onboarding</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background: linear-gradient(135deg, #e0eafc 0%, #f7faff 100%); font-family: 'Quicksand', Arial, sans-serif; }
+        .container { max-width: 400px; margin: 60px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #2a529820; padding: 32px; }
+        h2 { color: #2a5298; }
+        label { display: block; margin-top: 16px; }
+        input, select { width: 96%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid #b9d8f0; }
+        button { margin-top: 24px; background: #2a5298; color: #fff; border: none; border-radius: 6px; padding: 10px 0; width: 100%; font-size: 1.1rem; }
+        .msg { margin-top: 18px; }
+    </style>
+</head>
+<body>
+    <div class="container"> 
+        <h2>Resident Onboarding</h2>
+        <form id="onboardForm">
+            <label>Name <input type="text" name="name" required></label>
+            <label>Username <input type="text" name="username" required></label>
+            <label>Password <input type="password" name="password" required></label>
+            <label>Age <input type="number" name="age" required></label>
+            <label>Unit <input type="text" name="unit"></label>
+            <label>Mobile Number <input type="text" name="mobile_number"></label>
+            <label>Immediate Family Name <input type="text" name="immediate_family_name"></label>
+            <label>Immediate Family Relation <input type="text" name="immediate_family_relation"></label>
+            <label>Immediate Family Contact No <input type="text" name="immediate_family_contact_no"></label>
+            <button type="submit">Add Resident</button>
+        </form>
+        <div class="msg" id="msg"></div>
+    </div>
+    <script src="../js/resident_onboarding.js"></script>
+</body>
+</html>

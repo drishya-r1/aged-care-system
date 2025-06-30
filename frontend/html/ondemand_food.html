@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>On-Demand Food Menu</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7faff; margin: 0; padding: 20px; }
+        h1 { color: #2a5298; }
+        .food-item { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #e0eafc; margin-bottom: 16px; padding: 16px; }
+        .food-item h2 { margin: 0 0 8px 0; color: #1e3c72; }
+        .food-item .desc { color: #555; }
+        .request-btn { margin-top: 10px; background: #2a5298; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        .request-btn:hover { background: #1e3c72; }
+        /* Modal styles */
+        #foodModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.3);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        #foodModal[style*="display: flex"] {
+            display: flex !important;
+        }
+        #foodModal > div { background:#fff; padding:32px 24px; border-radius:8px; box-shadow:0 2px 8px #aaa; text-align:center; min-width:250px; }
+        #modalMessage { margin-bottom:20px; font-size:1.2em; }
+        #modalOkBtn { padding:8px 24px; background:#2a5298; color:#fff; border:none; border-radius:4px; font-size:1em; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <h1>On-Demand Food Menu</h1>
+    <button id="backBtn" style="margin-bottom:20px; background:#2a5298; color:#fff; border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">Back</button>
+    <form id="foodRequestForm">
+        <div id="food-list"></div>
+        <button type="submit" class="request-btn" style="margin-top:20px; background:#2a5298; color:#fff; border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">Request</button>
+    </form>
+
+    <!-- Modal Dialog -->
+    <div id="foodModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:32px 24px; border-radius:8px; box-shadow:0 2px 8px #aaa; text-align:center; min-width:250px;">
+            <div id="modalMessage" style="margin-bottom:20px; font-size:1.2em;">Food request submitted!</div>
+            <button id="modalOkBtn" style="padding:8px 24px; background:#2a5298; color:#fff; border:none; border-radius:4px; font-size:1em; cursor:pointer;">OK</button>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('backBtn').onclick = function() {
+        window.location.href = '../html/residents_index.html';
+    };
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        let residentId = sessionStorage.getItem('resident_id');
+        if (!residentId) {
+            residentId = prompt("Enter your Resident ID:");
+            sessionStorage.setItem('resident_id', residentId);
+        }
+
+        async function loadFoodMenu() {
+            const foodList = document.getElementById('food-list');
+            foodList.innerHTML = 'Loading...';
+            try {
+                const response = await fetch('/api/ondemand_food_menu');
+                const data = await response.json();
+                if (data.menu && data.menu.length > 0) {
+                    foodList.innerHTML = '';
+                    data.menu.forEach(item => {
+                        // Use the correct property names from your Excel file
+                        const foodId = item.food_item_id || item.id || item.menu_item_id;
+                        const foodName = item.name || item["Food Name"] || "No Name";
+                        const foodDesc = item.description || item["Description"] || "";
+                        foodList.innerHTML += `
+                            <div class="food-item">
+                                <label>
+                                    <input type="checkbox" name="food_item" value="${foodId}" data-name="${foodName}">
+                                    <strong>${foodName}</strong> - ${foodDesc}
+                                </label>
+                            </div>
+                        `;
+                    });
+                } else {
+                    foodList.innerHTML = '<p>No food items available.</p>';
+                }
+            } catch (err) {
+                foodList.innerHTML = '<p>Error loading menu.</p>';
+            }
+        }
+
+        document.getElementById('foodRequestForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const checked = Array.from(document.querySelectorAll('input[name="food_item"]:checked'));
+            if (checked.length === 0) {
+                alert('Please select at least one food item.');
+                return;
+            }
+            const now = new Date().toISOString();
+            const requests = checked.map(cb => ({
+                alert_id: Math.floor(Math.random() * 1000000),
+                resident_id: residentId,
+                food_item_id: cb.value,
+                food_item_name: cb.getAttribute('data-name'),
+                timestamp: now,
+                details: `Request for ${cb.getAttribute('data-name')}`,
+                status: "pending",
+                unit: sessionStorage.getItem('unit')
+            }));
+
+            // Send each request to the backend
+            for (const payload of requests) {
+                await fetch('/api/request_ondemand_food', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            // Show modal
+            document.getElementById('modalMessage').textContent = 'Food request submitted!';
+            document.getElementById('foodModal').style.display = 'flex';
+            document.getElementById('modalOkBtn').onclick = function() {
+                document.getElementById('foodModal').style.display = 'none';
+                window.location.href = '../html/residents_index.html';
+            };
+        };
+
+        loadFoodMenu();
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Aged Care Assistance System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Add Google Fonts for a rounded, friendly look similar to Jesmond logo -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2a5298;
+            --secondary: #1e3c72;
+            --accent: #e0eafc;
+            --background: #f7faff;
+            --logo-bg: #fff;
+            --user-bg: #e0eafc;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            min-height: 100vh;
+            min-width: 100vw;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--background) 100%);
+            font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            align-content: center;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            align-content: center;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            flex: 1 0 auto;
+        }
+        .header {
+            width: 100vw;
+            max-width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 36px 0 36px;
+            box-sizing: border-box;
+        }
+        .logo-box {
+            display: flex;
+            align-items: center;
+            background: var(--logo-bg);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(42,82,152,0.07);
+            padding: 8px;
+        }
+        .logo-img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .user-circle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--user-bg);
+            box-shadow: 0 2px 8px rgba(42,82,152,0.07);
+            font-size: 2rem;
+            color: var(--primary);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .user-circle:hover {
+            background: #d0dbf7;
+        }
+        .container {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(42,82,152,0.08);
+            padding: 40px 32px 32px 32px;
+            text-align: center;
+            max-width: 350px;
+            margin-top: 32px;
+            width: 80vw;
+        }
+        h1 {
+            color: var(--primary);
+            margin-bottom: 24px;
+            font-size: 2rem;
+            letter-spacing: 1px;
+            font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
+            font-weight: 700;
+        }
+        .icon {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px 32px;
+            margin: 36px 0 0 0;
+            justify-items: center;
+        }
+        .square-btn {
+            background: linear-gradient(135deg, var(--accent) 60%, var(--primary) 100%);
+            color: var(--primary);
+            border: none;
+            border-radius: 10px;
+            width: 85%;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
+            box-shadow: 0 2px 8px rgba(42,82,152,0.08);
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, color 0.2s;
+            outline: none;
+            position: relative;
+        }
+        .square-btn:hover, .square-btn:focus {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #fff;
+            transform: translateY(-2px) scale(1.03);
+        }
+        .emoji {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+            display: block;
+        }
+        .btn-label {
+            font-size: 1.08rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
+        }
+        .footer {
+            margin-top: 32px;
+            color: #888;
+            font-size: 0.95rem;
+            font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
+        }
+        @media (max-width: 600px) {
+            .header {
+                padding: 18px 10vw 0 10vw;
+            }
+            .container {
+                padding: 18px 6vw 18px 6vw;
+                margin-top: 18px;
+                max-width: 90vw;
+            }
+            .button-grid {
+                gap: 16px 12px;
+            }
+            .square-btn {
+                width: 80px;
+                height: 80px;
+                font-size: 0.95rem;
+            }
+            .emoji {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-box">
+            <img src="html/logo.png" alt="Aged Care Logo" class="logo-img">
+        </div>
+        <div class="user-circle" title="Your Account">
+            <span>&#128100;</span>
+        </div>
+    </div>
+    <div class="container">
+        <span class="icon" aria-label="Care">&#128106;</span>
+        <h1>Hello, {username}!</h1>
+        <div class="button-grid">
+            <button id="emergencyButton" class="square-btn" title="Emergency">
+                <span class="emoji" aria-label="Emergency">&#9888;&#65039;</span>
+                <span class="btn-label">Emergency</span>
+            </button>
+            <button id="foodButton" class="square-btn" title="Food">
+                <span class="emoji" aria-label="Food">&#127828;</span>
+                <span class="btn-label">Food</span>
+            </button>
+            <button id="assistanceButton" class="square-btn" title="Assistance">
+                <span class="emoji" aria-label="Assistance">&#128104;&#8205;&#9877;&#65039;</span>
+                <span class="btn-label">Assistance</span>
+            </button>
+            <button id="otherButton" class="square-btn" title="Other">
+                <span class="emoji" aria-label="Other">&#10067;</span>
+                <span class="btn-label">Other</span>
+            </button>
+        </div>
+    </div>
+    <div class="footer">
+        &copy; 2025 Aged Care Assistance System
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assistance Request</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7faff; margin: 0; padding: 20px; }
+        h1 { color: #2a5298; }
+        .option-group { margin-bottom: 20px; }
+        .option-group label { display: block; margin-bottom: 10px; }
+        .comment-box { width: 100%; margin-bottom: 20px; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+        .request-btn, .back-btn { background: #2a5298; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px; }
+        .request-btn:hover, .back-btn:hover { background: #1e3c72; }
+        #assistanceModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.3);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        #assistanceModal[style*="display: flex"] {
+            display: flex !important;
+        }
+        #assistanceModal > div { background:#fff; padding:32px 24px; border-radius:8px; box-shadow:0 2px 8px #aaa; text-align:center; min-width:250px; }
+        #modalMessage { margin-bottom:20px; font-size:1.2em; }
+        #modalOkBtn { padding:8px 24px; background:#2a5298; color:#fff; border:none; border-radius:4px; font-size:1em; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <h1>Request Assistance</h1>
+    <button class="back-btn" id="backBtn">Back</button>
+    <form id="assistanceForm">
+        <div class="option-group">
+            <label><input type="radio" name="assistance_option" value="Help required in bathroom" required> Help required in bathroom</label>
+            <label><input type="radio" name="assistance_option" value="TV is not working"> TV is not working</label>
+            <label><input type="radio" name="assistance_option" value="Help needed for a short walk"> Help needed for a short walk</label>
+        </div>
+        <textarea class="comment-box" name="comments" rows="3" placeholder="Describe your issue (optional)"></textarea>
+        <button type="submit" class="request-btn">Request</button>
+    </form>
+
+    <!-- Modal Dialog -->
+    <div id="assistanceModal">
+        <div>
+            <div id="modalMessage">Alert sent to available Nurse and will attended shortly</div>
+            <button id="modalOkBtn">OK</button>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('backBtn').onclick = function() {
+        window.location.href = 'residents_index.html';
+    };
+
+    document.getElementById('assistanceForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const residentId = sessionStorage.getItem('resident_id');
+        const selectedOption = document.querySelector('input[name="assistance_option"]:checked');
+        const comments = document.querySelector('textarea[name="comments"]').value.trim();
+        if (!selectedOption) {
+            alert('Please select an assistance option.');
+            return;
+        }
+        let details = selectedOption.value;
+        if (comments) {
+            details += ' | ' + comments;
+        }
+        const payload = {
+            alert_id: Math.floor(Math.random() * 1000000),
+            resident_id: residentId,
+            alert_type: "assistance",
+            timestamp: new Date().toISOString(),
+            details: details,
+            status: "pending",
+            unit: sessionStorage.getItem('unit')
+        };
+        try {
+            const response = await fetch('/api/alerts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('modalMessage').textContent = 'Alert sent to available Nurse and will attended shortly';
+                document.getElementById('assistanceModal').style.display = 'flex';
+                document.getElementById('modalOkBtn').onclick = function() {
+                    document.getElementById('assistanceModal').style.display = 'none';
+                    window.location.href = 'residents_index.html';
+                };
+            } else {
+                alert('Failed to send alert.');
+            }
+        } catch (err) {
+            alert('Failed to send alert.');
+        }
+    };
+    </script>
+</body>
+</html>

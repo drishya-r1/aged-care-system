@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Events</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7faff; margin: 0; padding: 20px; }
+        h1 { color: #2a5298; }
+        .event-list { margin-top: 24px; }
+        .event-item { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #e0eafc; margin-bottom: 16px; padding: 16px; }
+        .event-title { font-weight: bold; font-size: 1.2em; color: #1e3c72; }
+        .event-date { color: #555; font-size: 0.95em; }
+        .event-desc { margin-top: 8px; color: #444; }
+        .back-btn { background: #2a5298; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-bottom: 20px; }
+        .back-btn:hover { background: #1e3c72; }
+    </style>
+</head>
+<body>
+    <h1>Events</h1>
+    <button class="back-btn" id="backBtn">Back</button>
+    <div class="event-list" id="eventList"></div>
+    <script>
+        document.getElementById('backBtn').onclick = function() {
+            window.location.href = 'residents_index.html';
+        };
+
+        async function loadEvents() {
+            const eventList = document.getElementById('eventList');
+            eventList.innerHTML = 'Loading...';
+            try {
+                const response = await fetch('/api/get_events');
+                const data = await response.json();
+                if (data.events && data.events.length > 0) {
+                    eventList.innerHTML = '';
+                    data.events.forEach(event => {
+                        console.log(event); // Add this line to inspect keys
+                        eventList.innerHTML += `
+                            <div class="event-item">
+                                <div class="event-title">${event["eventname"] || event["eventname "] || Object.values(event)[1] || 'Untitled Event'}</div>
+                                <div class="event-date">
+                                    Date: ${event["event_date"] || ''} 
+                                    | Start: ${event["start_time"] || ''} 
+                                    | End: ${event["end_time"] || ''}
+                                </div>
+                                <div class="event-desc">${event["event_descrition"] || ''}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    eventList.innerHTML = '<p>No events available.</p>';
+                }
+            } catch (err) {
+                eventList.innerHTML = '<p>Error loading events.</p>';
+            }
+        }
+        loadEvents();
+    </script>
+</body>
+</html>

@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Portal</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7faff; margin: 0; }
+        .header-ribbon {
+            width: 100vw;
+            background: #1976d2;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 18px;
+            padding: 0 32px;
+            height: 64px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 8px #e0eafc;
+        }
+        .header-logo {
+            height: 44px;
+            margin-right: 18px;
+        }
+        .header-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .footer-ribbon {
+            width: 100vw;
+            background: #1976d2;
+            color: #fff;
+            text-align: center;
+            padding: 14px 0 12px 0;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            font-size: 1em;
+            letter-spacing: 1px;
+            box-shadow: 0 -2px 8px #e0eafc;
+        }
+        .admin-container {
+            display: flex;
+            min-height: calc(100vh - 108px); /* header + footer height */
+        }
+        .sidebar {
+            width: 220px;
+            background: #1976d2;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding-top: 40px;
+            min-height: 100%;
+        }
+        .sidebar h2 {
+            margin: 0 0 32px 0;
+            text-align: center;
+            font-size: 1.3em;
+            letter-spacing: 1px;
+        }
+        .menu-item {
+            padding: 16px 32px;
+            background: none;
+            border: none;
+            color: #fff;
+            text-align: left;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            outline: none;
+        }
+        .menu-item.active, .menu-item:hover {
+            background: #fff;
+            color: #1976d2;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 5vw 80px 5vw;
+        }
+        .logout-btn {
+            background: #d32f2f;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-left: auto;
+            margin-right: 0;
+            height: 40px;
+            align-self: center;
+        }
+        .section { display: none; max-width: 480px; margin: 0 auto; background: #fff; padding: 32px 32px 24px 32px; border-radius: 12px; box-shadow: 0 2px 16px #e0eafc; }
+        .section.active { display: block; }
+        .form-row { display: flex; align-items: center; margin-bottom: 14px; gap: 16px; }
+        .form-row label { min-width: 140px; font-weight: 500; color: #1976d2; }
+        .form-row input[type="text"], .form-row input[type="email"], .form-row input[type="tel"] { 
+            padding: 10px; 
+            border: 1px solid #b0bec5; 
+            border-radius: 6px; 
+            font-size: 1em; 
+            background: #f5f7fa; 
+            transition: border 0.2s; 
+}
+        .input-short { width: 80px; }
+        .input-medium { width: 180px; }
+        .input-long { width: 300px; }
+        button[type="submit"] {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            padding: 12px 0;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        button[type="submit"]:hover { background: #1251a2; }
+        #residentResult, #nurseResult { margin-top: 12px; font-weight: bold; color: #388e3c; }
+        .resident-result-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            margin-top: 8px;
+            box-shadow: 0 2px 8px #e0eafc;
+        }
+        .resident-result-table th, .resident-result-table td {
+            border: 1px solid #b0bec5;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .resident-result-table th {
+            background: #e3f2fd;
+            color: #1976d2;
+            font-weight: 600;
+        }
+        .resident-result-table tr:nth-child(even) {
+            background: #f5f7fa;
+        }
+        .button-row {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+        .action-btn {
+            flex: 1 1 0;
+            padding: 12px 0;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+            width: 100%;
+            max-width: 160px;
+        }
+        .save-btn {
+            background: #1976d2;
+            color: #fff;
+        }
+        .save-btn:hover {
+            background: #1251a2;
+        }
+        .cancel-btn {
+            background: #b0bec5;
+            color: #333;
+        }
+        .cancel-btn:hover {
+            background: #90a4ae;
+        }
+        @media (max-width: 800px) {
+            .admin-container { flex-direction: column; }
+            .sidebar { flex-direction: row; width: 100vw; min-height: unset; padding-top: 0; }
+            .menu-item, .logout-btn { margin: 0; padding: 12px 10px; font-size: 1em; }
+            .main-content { padding: 20px 2vw 80px 2vw; }
+            .header-ribbon, .footer-ribbon { padding-left: 10px; padding-right: 10px; }
+        }
+        .centered-edit-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 40px auto 0 auto;
+            max-width: 480px;
+            background: #fff;
+            padding: 32px 32px 24px 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px #e0eafc;
+        }
+        .edit-title {
+            text-align: center;
+            color: #1976d2;
+            margin-bottom: 24px;
+        }
+        #editResidentForm {
+            width: 100%;
+        }
+        .button-row {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 18px;
+        }
+        .action-btn {
+            flex: 1 1 0;
+            padding: 12px 0;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+            width: 100%;
+            max-width: 160px;
+        }
+        .save-btn {
+            background: #1976d2;
+            color: #fff;
+        }
+        .save-btn:hover {
+            background: #1251a2;
+        }
+        .cancel-btn {
+            background: #b0bec5;
+            color: #333;
+        }
+        .cancel-btn:hover {
+            background: #90a4ae;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-ribbon">
+        <img src="logo.png" alt="Logo" class="header-logo">
+        <span class="header-title">Aged Care Admin Portal</span>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
+    <div class="admin-container">
+        <nav class="sidebar">
+            <h2>Admin Menu</h2>
+            <button class="menu-item active" id="residentMenu">Resident Onboarding</button>
+            <button class="menu-item" id="nurseMenu">Nurse Onboarding</button>
+            <button class="menu-item" id="searchResidentMenu">Search/View/Edit Resident Details</button>
+            <button class="menu-item" id="searchNurseMenu">Search/View/Edit Nurse Details</button>
+            <button class="menu-item" id="resetPwdMenu">Reset Password</button>
+            <!-- Add more menu items here as needed -->
+        </nav>
+        <div class="main-content">
+            <!-- Resident Onboarding Form -->
+            <div class="section active" id="residentSection">
+                <h2 style="color:#1976d2;">Onboard Resident</h2>
+                <form id="onboardResidentForm" autocomplete="off">
+                    <div class="form-row">
+                        <label for="resident_id">Resident ID</label>
+                        <input type="text" id="resident_id" name="resident_id" class="input-short" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="resident_userid">User ID</label>
+                        <input type="text" id="resident_userid" name="userid" class="input-short" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="resident_username">Username</label>
+                        <input type="text" id="resident_username" name="username" class="input-medium" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="resident_unit">Unit</label>
+                        <input type="text" id="resident_unit" name="unit" class="input-short" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="resident_dob">Date of Birth</label>
+                        <input type="text" id="resident_dob" name="date_of_birth" class="input-medium">
+                    </div>
+                    <div class="form-row">
+                        <label for="resident_diet">Dietary Notes</label>
+                        <input type="text" id="resident_diet" name="dietary_notes" class="input-long">
+                    </div>
+                    <div class="form-row">
+                        <label for="resident_first_name">First Name</label>
+                        <input type="text" id="resident_first_name" name="first_name" class="input-medium" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="resident_last_name">Last Name</label>
+                        <input type="text" id="resident_last_name" name="last_name" class="input-medium" required>
+                    </div>
+                    <button type="submit">Onboard Resident</button>
+                </form>
+                <div id="residentResult"></div>
+            </div>
+            <!-- Nurse Onboarding Form -->
+            <div class="section" id="nurseSection">
+                <h2 style="color:#1976d2;">Onboard Nurse</h2>
+                <form id="onboardNurseForm" autocomplete="off">
+                    <div class="form-row">
+                        <label for="nurse_id">Nurse ID</label>
+                        <input type="text" id="nurse_id" name="nurse_id" class="input-short" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="nurse_name">Name</label>
+                        <input type="text" id="nurse_name" name="name" class="input-medium" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="nurse_dob">Date of Birth</label>
+                        <input type="text" id="nurse_dob" name="DOB" class="input-medium">
+                    </div>
+                    <div class="form-row">
+                        <label for="nurse_units_allocated">Units Allocated</label>
+                        <input type="text" id="nurse_units_allocated" name="units_allocated" class="input-long" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="nurse_mobile">Mobile Number</label>
+                        <input type="text" id="nurse_mobile" name="mobile_number" class="input-medium">
+                    </div>
+                    <div class="form-row">
+                        <label for="nurse_email">Email</label>
+                        <input type="email" id="nurse_email" name="email" class="input-long">
+                    </div>
+                    <div class="form-row">
+                        <label for="nurse_experience">Experience</label>
+                        <input type="text" id="nurse_experience" name="experience" class="input-short">
+                    </div>
+                    <div class="form-row">
+                        <label for="nurse_qualifications">Qualifications</label>
+                        <input type="text" id="nurse_qualifications" name="qualifications" class="input-long">
+                    </div>
+                    <div class="form-row">
+                        <label for="nurse_userid">User ID</label>
+                        <input type="text" id="nurse_userid" name="userid" class="input-short" required>
+                    </div>
+                    <button type="submit">Onboard Nurse</button>
+                </form>
+                <div id="nurseResult"></div>
+            </div>
+            <!-- Search Residents Section -->
+            <div class="section" id="searchResidentSection">
+                <h2 style="color:#1976d2;">Search Residents</h2>
+                <form id="searchResidentForm" autocomplete="off">
+                    <div class="form-row">
+                        <label for="search_resident_id">Resident ID</label>
+                        <input type="text" id="search_resident_id" name="resident_id" class="input-short">
+                    </div>
+                    <div class="form-row">
+                        <label for="search_resident_name">Name</label>
+                        <input type="text" id="search_resident_name" name="name" class="input-medium">
+                    </div>
+                    <div class="form-row">
+                        <label for="search_resident_unit">Unit</label>
+                        <input type="text" id="search_resident_unit" name="unit" class="input-short">
+                    </div>
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <!-- Results will be shown here -->
+            <div id="searchResidentResultSection" style="margin: 32px auto 0 auto; max-width: 700px; display:none;">
+                <h3 style="color:#1976d2;">Resident Search Results</h3>
+                <div id="searchResidentResult"></div>
+            </div>
+            <!-- Edit Resident Section (hidden by default) -->
+            <div id="editResidentSection" class="centered-edit-section" style="display:none;">
+                <h3 class="edit-title">Edit Resident</h3>
+                <form id="editResidentForm"></form>
+            </div>
+            <!-- Search Nurses Section -->
+            <div class="section" id="searchNurseSection" style="display:none;">
+                <h2 style="color:#1976d2;">Search/View/Edit Nurse Details</h2>
+                <form id="searchNurseForm" autocomplete="off">
+                    <div class="form-row">
+                        <label for="search_nurse_id">Nurse ID</label>
+                        <input type="text" id="search_nurse_id" name="nurse_id" class="input-short">
+                    </div>
+                    <div class="form-row">
+                        <label for="search_nurse_name">Name</label>
+                        <input type="text" id="search_nurse_name" name="name" class="input-medium">
+                    </div>
+                    <div class="form-row">
+                        <label for="search_nurse_unit">Units Allocated</label>
+                        <input type="text" id="search_nurse_unit" name="units_allocated" class="input-short">
+                    </div>
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <!-- Results will be shown here -->
+            <div id="searchNurseResultSection" style="margin:32px auto 0 auto; max-width:700px; display:none;">
+                <h3 style="color:#1976d2;">Nurse Search Results</h3>
+                <div id="searchNurseResult"></div>
+            </div>
+            <!-- Edit Nurse Section (hidden by default) -->
+            <div id="editNurseSection" class="centered-edit-section" style="display:none;">
+                <h3 class="edit-title">Edit Nurse</h3>
+                <form id="editNurseForm"></form>
+            </div>
+            <!-- Reset Password Section (hidden by default) -->
+            <div class="section" id="resetPwdSection" style="display:none;">
+                <h2 style="color:#1976d2;">Reset User Password</h2>
+                <form id="resetPwdForm" autocomplete="off">
+                    <div class="form-row">
+                        <label for="reset_username">Username</label>
+                        <input type="text" id="reset_username" name="username" class="input-medium" required>
+                    </div>
+                    <button type="submit">Reset Password</button>
+                </form>
+                <div id="resetPwdResult" style="margin-top:16px;font-weight:bold;color:#388e3c;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-ribbon">
+        &copy; 2025 Aged Care Assistance System. All rights reserved.
+    </div>
+    <script>
+        // Sidebar menu logic
+        const residentMenu = document.getElementById('residentMenu');
+        const nurseMenu = document.getElementById('nurseMenu');
+        const searchResidentMenu = document.getElementById('searchResidentMenu');
+        const residentSection = document.getElementById('residentSection');
+        const nurseSection = document.getElementById('nurseSection');
+        const searchResidentSection = document.getElementById('searchResidentSection');
+        const searchNurseMenu = document.getElementById('searchNurseMenu');
+        const searchNurseSection = document.getElementById('searchNurseSection');
+        const searchNurseResultSection = document.getElementById('searchNurseResultSection');
+        const editNurseSection = document.getElementById('editNurseSection');
+        const resetPwdMenu = document.getElementById('resetPwdMenu');
+        const resetPwdSection = document.getElementById('resetPwdSection');
+
+        residentMenu.onclick = function() {
+            hideAllSections();
+            document.getElementById('residentSection').style.display = 'block';
+            residentMenu.classList.add('active');
+            nurseMenu.classList.remove('active');
+            searchResidentMenu.classList.remove('active');
+            searchNurseMenu.classList.remove('active');
+            resetPwdMenu.classList.remove('active');
+        };
+        nurseMenu.onclick = function() {
+            hideAllSections();
+            document.getElementById('nurseSection').style.display = 'block';
+            nurseMenu.classList.add('active');
+            residentMenu.classList.remove('active');
+            searchResidentMenu.classList.remove('active');
+            searchNurseMenu.classList.remove('active');
+            resetPwdMenu.classList.remove('active');
+        };
+        searchResidentMenu.onclick = function() {
+            hideAllSections();
+            document.getElementById('searchResidentSection').style.display = 'block';
+            searchResidentMenu.classList.add('active');
+            residentMenu.classList.remove('active');
+            nurseMenu.classList.remove('active');
+            searchNurseMenu.classList.remove('active');
+            resetPwdMenu.classList.remove('active');
+        };
+        searchNurseMenu.onclick = function() {
+            hideAllSections();
+            document.getElementById('searchNurseSection').style.display = 'block';
+            searchNurseMenu.classList.add('active');
+            residentMenu.classList.remove('active');
+            nurseMenu.classList.remove('active');
+            searchResidentMenu.classList.remove('active');
+            resetPwdMenu.classList.remove('active');
+        };
+        resetPwdMenu.onclick = function() {
+            hideAllSections();
+            resetPwdSection.style.display = 'block';
+            residentMenu.classList.remove('active');
+            nurseMenu.classList.remove('active');
+            searchResidentMenu.classList.remove('active');
+            searchNurseMenu.classList.remove('active');
+            resetPwdMenu.classList.add('active');
+        };
+
+        function hideAllSections() {
+            document.getElementById('residentSection').style.display = 'none';
+            document.getElementById('nurseSection').style.display = 'none';
+            document.getElementById('searchResidentSection').style.display = 'none';
+            document.getElementById('searchNurseSection').style.display = 'none';
+            document.getElementById('resetPwdSection').style.display = 'none';
+            document.getElementById('searchResidentResultSection').style.display = 'none';
+            document.getElementById('searchNurseResultSection').style.display = 'none';
+            document.getElementById('editResidentSection').style.display = 'none';
+            document.getElementById('editNurseSection').style.display = 'none';
+        }
+
+        // Onboard Resident
+        document.getElementById('onboardResidentForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const firstName = form.first_name.value.trim();
+            const lastName = form.last_name.value.trim();
+            const payload = {
+                resident_id: form.resident_id.value,
+                userid: form.userid.value,
+                username: form.username.value,
+                first_name: firstName,
+                last_name: lastName,
+                name: firstName + ' ' + lastName, // Concatenated, not visible in form
+                unit: form.unit.value,
+                date_of_birth: form.date_of_birth.value,
+                dietary_notes: form.dietary_notes.value
+            };
+            const res = await fetch('/api/admin/onboard_resident', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            document.getElementById('residentResult').textContent = data.success ?
+                `Resident onboarded. Temporary password: ${data.temp_password}` : 'Failed to onboard resident.';
+        };
+
+        // Onboard Nurse
+        document.getElementById('onboardNurseForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const payload = {
+                nurse_id: form.nurse_id.value,
+                name: form.name.value,
+                DOB: form.DOB.value,
+                units_allocated: form.units_allocated.value,
+                mobile_number: form.mobile_number.value,
+                email: form.email.value,
+                experience: form.experience.value,
+                qualifications: form.qualifications.value,
+                userid: form.userid.value
+            };
+            const res = await fetch('/api/admin/onboard_nurse', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            document.getElementById('nurseResult').textContent = data.success ?
+                `Nurse onboarded. Temporary password: ${data.temp_password}` : 'Failed to onboard nurse.';
+        };
+
+        // Search Residents
+        document.getElementById('searchResidentForm').onsubmit = async function(e) {
+            e.preventDefault();
+            // Hide edit section if visible
+            document.getElementById('editResidentSection').style.display = 'none';
+            // Optionally clear previous results
+            document.getElementById('searchResidentResult').innerHTML = '';
+
+            const form = e.target;
+            const params = new URLSearchParams({
+                resident_id: form.resident_id.value,
+                name: form.name.value,
+                unit: form.unit.value
+            });
+            const res = await fetch('/api/admin/search_residents?' + params.toString());
+            const data = await res.json();
+            const resultDiv = document.getElementById('searchResidentResult');
+            const resultSection = document.getElementById('searchResidentResultSection');
+            if (data.residents && data.residents.length > 0) {
+                const columns = Object.keys(data.residents[0]);
+                let html = `<table class="resident-result-table"><thead><tr>`;
+                columns.forEach(key => {
+                    html += `<th>${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</th>`;
+                });
+                html += `<th>Edit</th></tr></thead><tbody>`;
+                data.residents.forEach((resident, idx) => {
+                    html += `<tr>`;
+                    columns.forEach(col => {
+                        html += `<td>${resident[col]}</td>`;
+                    });
+                    html += `<td><button class="edit-btn" data-index="${idx}">Edit</button></td>`;
+                    html += `</tr>`;
+                });
+                html += `</tbody></table>`;
+                resultDiv.innerHTML = html;
+                resultSection.style.display = 'block';
+
+                // Attach event listeners to Edit buttons
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.onclick = function() {
+                        showEditResidentForm(data.residents[this.dataset.index]);
+                    };
+                });
+            } else {
+                resultDiv.textContent = "No residents found.";
+                resultSection.style.display = 'block';
+            }
+        };
+
+        function showEditResidentForm(resident) {
+            document.getElementById('searchResidentResultSection').style.display = 'none';
+            const editSection = document.getElementById('editResidentSection');
+            const form = document.getElementById('editResidentForm');
+            form.innerHTML = '';
+            Object.keys(resident).forEach(key => {
+                // Make resident_id and userid readonly
+                const readonly = (key === 'resident_id' || key === 'userid') ? 'readonly' : '';
+                form.innerHTML += `
+                    <div class="form-row">
+                        <label for="edit_${key}">${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+                        <input type="text" id="edit_${key}" name="${key}" value="${resident[key] || ''}" ${readonly}>
+                    </div>
+                `;
+            });
+            form.innerHTML += `
+                <div class="form-row button-row">
+                    <button type="submit" class="action-btn save-btn">Save</button>
+                    <button type="button" id="cancelEditBtn" class="action-btn cancel-btn">Cancel</button>
+                </div>
+            `;
+            editSection.style.display = 'block';
+
+            form.onsubmit = async function(e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const payload = {};
+                for (let [k, v] of formData.entries()) payload[k] = v;
+                // Always update the name field as first_name + ' ' + last_name
+                if ('first_name' in payload && 'last_name' in payload) {
+                    payload['name'] = (payload['first_name'] + ' ' + payload['last_name']).trim();
+                }
+                //print the payload to console for debugging
+                console.log('Edit Resident Payload:', payload);
+                const res = await fetch('/api/admin/update_resident', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Resident updated successfully!');
+                    editSection.style.display = 'none';
+                    document.getElementById('searchResidentForm').dispatchEvent(new Event('submit'));
+                } else {
+                    alert('Failed to update resident.');
+                }
+            };
+
+            document.getElementById('cancelEditBtn').onclick = function() {
+                editSection.style.display = 'none';
+                searchResidentResultSection.style.display = 'block';
+            };
+        }
+
+        // Search Nurses
+        document.getElementById('searchNurseForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const params = new URLSearchParams({
+                nurse_id: form.nurse_id.value,
+                name: form.name.value,
+                units_allocated: form.units_allocated.value
+            });
+            const res = await fetch('/api/admin/search_nurses?' + params.toString());
+            const data = await res.json();
+            const resultDiv = document.getElementById('searchNurseResult');
+            const resultSection = document.getElementById('searchNurseResultSection');
+            if (data.nurses && data.nurses.length > 0) {
+                const columns = Object.keys(data.nurses[0]);
+                let html = `<table class="resident-result-table"><thead><tr>`;
+                columns.forEach(key => {
+                    html += `<th>${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</th>`;
+                });
+                html += `<th>Edit</th></tr></thead><tbody>`;
+                data.nurses.forEach((nurse, idx) => {
+                    html += `<tr>`;
+                    columns.forEach(col => {
+                        html += `<td>${nurse[col]}</td>`;
+                    });
+                    html += `<td><button class="edit-nurse-btn" data-index="${idx}">Edit</button></td>`;
+                    html += `</tr>`;
+                });
+                html += `</tbody></table>`;
+                resultDiv.innerHTML = html;
+                resultSection.style.display = 'block';
+
+                document.querySelectorAll('.edit-nurse-btn').forEach(btn => {
+                    btn.onclick = function() {
+                        showEditNurseForm(data.nurses[this.dataset.index]);
+                    };
+                });
+            } else {
+                resultDiv.textContent = "No nurses found.";
+                resultSection.style.display = 'block';
+            }
+        };
+
+        function showEditNurseForm(nurse) {
+            document.getElementById('searchNurseResultSection').style.display = 'none';
+            const editSection = document.getElementById('editNurseSection');
+            const form = document.getElementById('editNurseForm');
+            form.innerHTML = '';
+            Object.keys(nurse).forEach(key => {
+                // Make nurse_id and userid readonly
+                const readonly = (key === 'nurse_id' || key === 'userid') ? 'readonly' : '';
+                form.innerHTML += `
+                    <div class="form-row">
+                        <label for="edit_nurse_${key}">${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+                        <input type="text" id="edit_nurse_${key}" name="${key}" value="${nurse[key] || ''}" ${readonly}>
+                    </div>
+                `;
+            });
+            form.innerHTML += `
+                <div class="form-row button-row">
+                    <button type="submit" class="action-btn save-btn">Save</button>
+                    <button type="button" id="cancelEditNurseBtn" class="action-btn cancel-btn">Cancel</button>
+                </div>
+            `;
+            editSection.style.display = 'block';
+
+            form.onsubmit = async function(e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const payload = {};
+                for (let [k, v] of formData.entries()) payload[k] = v;
+                const res = await fetch('/api/admin/update_nurse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Nurse updated successfully!');
+                    editSection.style.display = 'none';
+                    document.getElementById('searchNurseForm').dispatchEvent(new Event('submit'));
+                } else {
+                    alert('Failed to update nurse.');
+                }
+            };
+
+            document.getElementById('cancelEditNurseBtn').onclick = function() {
+                editSection.style.display = 'none';
+                document.getElementById('searchNurseResultSection').style.display = 'block';
+            };
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').onclick = async function() {
+            const userid = sessionStorage.getItem('userid');
+            await fetch('/api/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userid })
+            });
+            sessionStorage.clear();
+            //window.location.href = '/frontend/html/login.html';
+            window.location.href = '/';
+        };
+
+        // Reset Password
+        document.getElementById('resetPwdForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const username = form.username.value.trim();
+            const res = await fetch('/api/admin/reset_user_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+            });
+            const data = await res.json();
+            const resultDiv = document.getElementById('resetPwdResult');
+            if (data.success) {
+                resultDiv.textContent = `Temporary password: ${data.temp_password}`;
+            } else {
+                resultDiv.textContent = 'Failed to reset password.';
+                resultDiv.style.color = '#d32f2f';
+            }
+        };
+    </script>
+</body>
+</html>
