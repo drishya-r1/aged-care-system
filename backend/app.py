@@ -9,6 +9,8 @@ from backend.routes.residents.food_requests import food_bp
 from backend.routes.residents.resident_details import resident_bp
 from backend.routes.residents.emergency import emergency_bp
 from backend.routes.admin.admin import admin_bp
+from backend.routes.analytics import analytics_bp
+from backend.routes.feedback import feedback_bp
 import sys
 import os
 
@@ -29,6 +31,8 @@ app.register_blueprint(emergency_bp)
 
 app.register_blueprint(food_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(analytics_bp)
+app.register_blueprint(feedback_bp)
 
 @app.route('/')
 def serve_login():

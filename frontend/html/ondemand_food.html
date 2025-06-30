@@ -53,9 +53,46 @@
 
     document.addEventListener('DOMContentLoaded', async function() {
         let residentId = sessionStorage.getItem('resident_id');
-        if (!residentId) {
-            residentId = prompt("Enter your Resident ID:");
-            sessionStorage.setItem('resident_id', residentId);
+        let residentName = sessionStorage.getItem('resident_name');
+        let residentUnit = sessionStorage.getItem('unit');
+        let username = sessionStorage.getItem('username');
+        if (!residentId || !residentName || !residentUnit) {
+            const userid = sessionStorage.getItem('userid');
+            if (userid) {
+                try {
+                    const res = await fetch(`/api/resident/details?userid=${userid}`);
+                    const data = await res.json();
+                    if (data.resident_id) {
+                        residentId = data.resident_id;
+                        residentName = data.name;
+                        residentUnit = data.unit;
+                        sessionStorage.setItem('resident_id', residentId);
+                        sessionStorage.setItem('resident_name', residentName);
+                        sessionStorage.setItem('unit', residentUnit);
+                    } else {
+                        residentId = prompt("Enter your Resident ID:");
+                        residentName = prompt("Enter your Name:");
+                        residentUnit = prompt("Enter your Unit:");
+                        sessionStorage.setItem('resident_id', residentId);
+                        sessionStorage.setItem('resident_name', residentName);
+                        sessionStorage.setItem('unit', residentUnit);
+                    }
+                } catch (e) {
+                    residentId = prompt("Enter your Resident ID:");
+                    residentName = prompt("Enter your Name:");
+                    residentUnit = prompt("Enter your Unit:");
+                    sessionStorage.setItem('resident_id', residentId);
+                    sessionStorage.setItem('resident_name', residentName);
+                    sessionStorage.setItem('unit', residentUnit);
+                }
+            } else {
+                residentId = prompt("Enter your Resident ID:");
+                residentName = prompt("Enter your Name:");
+                residentUnit = prompt("Enter your Unit:");
+                sessionStorage.setItem('resident_id', residentId);
+                sessionStorage.setItem('resident_name', residentName);
+                sessionStorage.setItem('unit', residentUnit);
+            }
         }
 
         async function loadFoodMenu() {
@@ -99,12 +136,13 @@
             const requests = checked.map(cb => ({
                 alert_id: Math.floor(Math.random() * 1000000),
                 resident_id: residentId,
+                resident_name: residentName,
                 food_item_id: cb.value,
                 food_item_name: cb.getAttribute('data-name'),
                 timestamp: now,
                 details: `Request for ${cb.getAttribute('data-name')}`,
                 status: "pending",
-                unit: sessionStorage.getItem('unit')
+                unit: residentUnit
             }));
 
             // Send each request to the backend

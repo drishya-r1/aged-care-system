@@ -451,6 +451,7 @@
             <!-- Alerts Section (default page) -->
             <div class="section" id="alertsSection">
                 <h2 style="color:#1976d2;">Alerts</h2>
+                <div id="alertsAnalytics" style="margin-bottom:32px;"></div>
                 <div style="overflow-x:auto;">
                     <table id="alertsTable" style="width:100%;border-collapse:collapse;background:#e3f2fd;">
                         <thead>
@@ -481,6 +482,8 @@
                         <tbody id="foodAlertsTbody"></tbody>
                     </table>
                 </div>
+                <h2 style="margin-top:40px;color:#1976d2;">Resident Feedback</h2>
+                <div id="feedbackSection" style="overflow-x:auto;margin-bottom:32px;"></div>
             </div>
         </div>
     </div>
@@ -851,9 +854,52 @@
             // Load alerts
             setTimeout(() => {
                 if (typeof loadAdminAlerts === 'function') loadAdminAlerts();
+                if (typeof loadAlertsAnalytics === 'function') loadAlertsAnalytics();
             }, 0);
         });
+
+        // Load feedback for admin
+        async function loadFeedback() {
+            const section = document.getElementById('feedbackSection');
+            section.innerHTML = '<div style="color:#888;">Loading feedback...</div>';
+            try {
+                const res = await fetch('/api/feedback/all');
+                const data = await res.json();
+                if (data.feedback && data.feedback.length > 0) {
+                    let html = `<table style="width:100%;min-width:600px;border-collapse:collapse;background:#f7faff;">
+                        <thead><tr style="background:#1976d2;color:#fff;">
+                            <th style="padding:10px 16px;border:1px solid #b0bec5;">Username</th>
+                            <th style="padding:10px 16px;border:1px solid #b0bec5;">Unit</th>
+                            <th style="padding:10px 16px;border:1px solid #b0bec5;">Feedback</th>
+                            <th style="padding:10px 16px;border:1px solid #b0bec5;">Timestamp</th>
+                        </tr></thead><tbody>`;
+                    data.feedback.forEach(row => {
+                        html += `<tr>`;
+                        html += `<td style="padding:8px 12px;border:1px solid #b0bec5;">${row.username}</td>`;
+                        html += `<td style="padding:8px 12px;border:1px solid #b0bec5;">${row.unit}</td>`;
+                        html += `<td style="padding:8px 12px;border:1px solid #b0bec5;">${row.feedback}</td>`;
+                        html += `<td style="padding:8px 12px;border:1px solid #b0bec5;">${row.timestamp ? row.timestamp.split('T')[0] : ''}</td>`;
+                        html += `</tr>`;
+                    });
+                    html += `</tbody></table>`;
+                    section.innerHTML = html;
+                } else {
+                    section.innerHTML = '<div style="color:#888;">No feedback submitted yet.</div>';
+                }
+            } catch (e) {
+                section.innerHTML = '<div style="color:#d32f2f;">Failed to load feedback.</div>';
+            }
+        }
+        // Load feedback when Alerts section is shown
+        alertsMenu.addEventListener('click', function() {
+            if (typeof loadFeedback === 'function') loadFeedback();
+        });
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof loadFeedback === 'function') loadFeedback();
+        });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/alerts_analytics.js"></script>
     <script src="../js/admin_alerts.js"></script>
     <script>
         // Ensure Alerts section loads alerts on menu click and on page load
@@ -875,14 +921,16 @@
             document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
             alertsMenu.classList.add('active');
             if (typeof loadAdminAlerts === 'function') loadAdminAlerts();
+            if (typeof loadAlertsAnalytics === 'function') loadAlertsAnalytics();
         });
-        // Only call loadAdminAlerts on page load once
+        // Only call loadAdminAlerts and loadAlertsAnalytics on page load once
         window.addEventListener('DOMContentLoaded', function() {
             hideAllSections();
             alertsSection.style.display = 'block';
             document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
             alertsMenu.classList.add('active');
             if (typeof loadAdminAlerts === 'function') loadAdminAlerts();
+            if (typeof loadAlertsAnalytics === 'function') loadAlertsAnalytics();
         });
     </script>
 </body>

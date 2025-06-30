@@ -32,65 +32,60 @@
             align-items: center;
             justify-content: space-between;
         }
-        .main-content {
+        .main-vertical-container {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 4px 24px rgba(42,82,152,0.10);
+            padding: 32px 32px 32px 32px;
+            margin: 32px auto 32px auto;
+            max-width: 800px;      /* Increased width */
+            min-width: 340px;
+            min-height: 80vh;
             display: flex;
             flex-direction: column;
-            flex-wrap: nowrap;
-            align-content: center;
             align-items: center;
-            justify-content: center;
-            width: 100vw;
-            flex: 1 0 auto;
+            position: relative;
         }
-        .header {
-            width: 100vw;
-            max-width: 100vw;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 24px 36px 0 36px;
-            box-sizing: border-box;
+        /* Responsive: allow more width on tablets/desktop */
+        @media (max-width: 900px) {
+            .main-vertical-container {
+                max-width: 98vw;
+                padding: 16px 2vw 18px 2vw;
+            }
+            .button-grid {
+                width: 100%;
+                gap: 20px 10px;
+            }
+            .square-btn {
+                width: 44vw;
+                min-width: 120px;
+                height: 70px;
+                font-size: 1.1rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .main-vertical-container {
+                min-height: 60vh;
+                padding: 12px 2vw 18px 2vw;
+                margin: 12px auto 18px auto;
+                max-width: 99vw;
+            }
         }
         .logo-box {
             display: flex;
             align-items: center;
+            justify-content: center;
             background: var(--logo-bg);
             border-radius: 50%;
             box-shadow: 0 2px 8px rgba(42,82,152,0.07);
             padding: 8px;
+            margin: 0 auto 10px auto;
         }
         .logo-img {
             width: 56px;
             height: 56px;
             border-radius: 50%;
             object-fit: cover;
-        }
-        .user-circle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--user-bg);
-            box-shadow: 0 2px 8px rgba(42,82,152,0.07);
-            font-size: 2rem;
-            color: var(--primary);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .user-circle:hover {
-            background: #d0dbf7;
-        }
-        .container {
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(42,82,152,0.08);
-            padding: 40px 32px 32px 32px;
-            text-align: center;
-            max-width: 350px;
-            margin-top: 32px;
-            width: 80vw;
         }
         h1 {
             color: var(--primary);
@@ -108,22 +103,24 @@
         .button-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 32px 32px;
-            margin: 36px 0 0 0;
+            gap: 36px 36px;
+            margin: 36px 0 0 0; /* Remove left shift */
             justify-items: center;
+            width: 100%; /* Full width of container */
         }
         .square-btn {
             background: linear-gradient(135deg, var(--accent) 60%, var(--primary) 100%);
             color: var(--primary);
             border: none;
-            border-radius: 10px;
-            width: 85%;
-            height: 90px;
+            border-radius: 14px;
+            width: 90%; /* Responsive width */
+            max-width: 200px;
+            height: 110px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 1.35rem;
             font-weight: 600;
             font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
             box-shadow: 0 2px 8px rgba(42,82,152,0.08);
@@ -138,8 +135,8 @@
             transform: translateY(-2px) scale(1.03);
         }
         .emoji {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
+            font-size: 2.6rem;
+            margin-bottom: 10px;
             color: var(--primary);
             display: block;
         }
@@ -150,85 +147,117 @@
             font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
         }
         .footer {
-            margin-top: 32px;
+            margin-top: 24px;
             color: #888;
             font-size: 0.95rem;
             font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
         }
+        .main-btn {
+            width: 100%;
+            margin: 10px 0 0 0;
+            padding: 14px 0;
+            font-size: 1.12em;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #e0eafc;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        #logoutBtn.main-btn {
+            background: #d32f2f;
+            color: #fff;
+        }
+        #openFeedbackBtn.main-btn {
+            background: var(--primary);
+            color: #fff;
+        }
+        #logoutBtn.main-btn:hover {
+            background: #a31515;
+        }
+        #openFeedbackBtn.main-btn:hover {
+            background: #1251a2;
+        }
+        /* Responsive improvements for mobile */
         @media (max-width: 600px) {
-            .header {
-                padding: 18px 10vw 0 10vw;
-            }
-            .container {
-                padding: 18px 6vw 18px 6vw;
-                margin-top: 18px;
-                max-width: 90vw;
+            .main-vertical-container {
+                min-height: 60vh;
+                padding: 12px 2vw 18px 2vw;
+                margin: 12px auto 18px auto;
+                max-width: 99vw;
             }
             .button-grid {
-                gap: 16px 12px;
+                gap: 14px 8px;
+                margin: 14px 0 0 0;
+            }
+            .square-btn, .main-btn {
+                font-size: 1.15em;
+                height: 54px;
+                min-width: 110px;
             }
             .square-btn {
-                width: 80px;
-                height: 80px;
-                font-size: 0.95rem;
+                padding: 8px 0;
             }
-            .emoji {
-                font-size: 1.6rem;
+        }
+        .feedback-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.18);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        .feedback-modal.show {
+            display: flex;
+        }
+        .feedback-card {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 4px 24px rgba(42,82,152,0.13);
+            padding: 32px 32px 24px 32px;
+            max-width: 600px;
+            width: 90vw;
+            min-width: 260px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .feedback-card h2 {
+            color: var(--primary);
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            text-align: center;
+            font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
+        }
+        .feedback-card textarea {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1.5px solid #b0bec5;
+            font-size: 1.08em;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        .feedback-card button {
+            margin-top: 16px;
+        }
+        @media (max-width: 600px) {
+            .feedback-card {
+                padding: 18px 4vw 18px 4vw;
+                max-width: 98vw;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="main-vertical-container">
         <div class="logo-box">
             <img src="../html/logo.png" alt="Aged Care Logo" class="logo-img">
         </div>
-        <div class="user-circle" title="Your Account">
-            <span>&#128100;</span>
-        </div>
-    </div>
-    <div class="container">
         <span class="icon" aria-label="Care">&#128106;</span>
         <h1>Hello, <span id="username-placeholder">{username}</span>!</h1>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const username = sessionStorage.getItem('username');
-                if (username) {
-                    document.getElementById('username-placeholder').textContent = username;
-                }
-                console.log('Username from sessionStorage:', username);
-
-                // Add this for the Food button
-                document.getElementById('foodButton').addEventListener('click', function() {
-                    window.location.href = '../html/ondemand_food.html';
-                });
-            });
-
-            async function fetchResidentDetails() {
-                const userid = sessionStorage.getItem('userid');
-                if (!userid) {
-                    alert('Please login first.');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                const res = await fetch(`/api/resident/details?userid=${encodeURIComponent(userid)}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    sessionStorage.setItem('resident_id', data.resident_id);
-                    sessionStorage.setItem('unit', data.unit);
-                    // Optionally store name or other info
-                    sessionStorage.setItem('resident_name', data.name);
-                } else {
-                    alert('Failed to load resident details');
-                }
-            }
-
-            // Call this on page load
-            document.addEventListener('DOMContentLoaded', async function() {
-                await fetchResidentDetails();
-                // ...rest of your code...
-            });
-        </script>
         <div class="button-grid">
             <button id="emergencyButton" class="square-btn" title="Emergency">
                 <span class="emoji" aria-label="Emergency">&#9888;&#65039;</span>
@@ -247,10 +276,103 @@
                 <span class="btn-label">Events</span>
             </button>
         </div>
+        <!-- Buttons at the bottom, just above footer -->
+        <div style="margin-top:auto;width:100%;display:flex;flex-direction:column;gap:10px;">
+            <button id="logoutBtn" class="main-btn">Logout</button>
+            <button id="openFeedbackBtn" class="main-btn">Give Feedback</button>
+        </div>
+        <div class="footer">
+            &copy; 2025 Aged Care Assistance System
+        </div>
     </div>
-    <div class="footer">
-        &copy; 2025 Aged Care Assistance System
+    <!-- Feedback Section (modal, styled as card in container) -->
+    <div class="feedback-modal" id="feedbackContainer">
+        <div class="feedback-card">
+            <h2>We value your feedback!</h2>
+            <textarea id="feedbackInput" rows="6"></textarea>
+            <button id="submitFeedbackBtn" class="main-btn">Submit Feedback</button>
+            <div id="feedbackMsg" style="margin-top:12px;font-size:1.08em;text-align:center;"></div>
+            <button id="closeFeedbackBtn" style="margin-top:18px;background:#b0bec5;color:#333;padding:8px 0;border:none;border-radius:6px;font-size:1em;cursor:pointer;width:100%;">Close</button>
+        </div>
     </div>
+    <script>
+    // Username display logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const username = sessionStorage.getItem('username');
+        if (username) {
+            document.getElementById('username-placeholder').textContent = username;
+        }
+        // Food button logic: fetch resident_id from API and then navigate
+        document.getElementById('foodButton').onclick = async function() {
+            const userid = sessionStorage.getItem('userid');
+            if (!userid) {
+                alert('User ID not found in session. Please log in again.');
+                return;
+            }
+            try {
+                const res = await fetch(`/api/resident/${userid}`);
+                const data = await res.json();
+                if (data.success && data.resident && data.resident.resident_id) {
+                    // Store resident_id in sessionStorage for use on the food page
+                    sessionStorage.setItem('resident_id', data.resident.resident_id);
+                    window.location.href = 'ondemand_food.html';
+                } else {
+                    alert('Resident details not found.');
+                }
+            } catch (e) {
+                alert('Failed to fetch resident details.');
+            }
+        };
+    });
+    document.getElementById('submitFeedbackBtn').onclick = async function() {
+        const feedback = document.getElementById('feedbackInput').value.trim();
+        const username = sessionStorage.getItem('username');
+        const unit = sessionStorage.getItem('unit');
+        const msgDiv = document.getElementById('feedbackMsg');
+        if (!feedback) {
+            msgDiv.textContent = 'Please enter your feedback.';
+            msgDiv.style.color = '#d32f2f';
+            return;
+        }
+        const res = await fetch('/api/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, unit, feedback })
+        });
+        const data = await res.json();
+        if (data.success) {
+            msgDiv.textContent = 'Thank you for your feedback!';
+            msgDiv.style.color = '#388e3c';
+            document.getElementById('feedbackInput').value = '';
+        } else {
+            msgDiv.textContent = 'Failed to submit feedback.';
+            msgDiv.style.color = '#d32f2f';
+        }
+    };
+    // Feedback modal logic
+    const openBtn = document.getElementById('openFeedbackBtn');
+    const feedbackContainer = document.getElementById('feedbackContainer');
+    const closeBtn = document.getElementById('closeFeedbackBtn');
+    function showFeedbackModal() {
+        feedbackContainer.classList.add('show');
+        feedbackContainer.style.display = 'flex';
+        openBtn.style.display = 'none';
+        document.body.style.overflow = 'hidden';
+    }
+    function hideFeedbackModal() {
+        feedbackContainer.classList.remove('show');
+        feedbackContainer.style.display = 'none';
+        openBtn.style.display = 'inline-block';
+        document.body.style.overflow = '';
+    }
+    openBtn.onclick = showFeedbackModal;
+    closeBtn.onclick = hideFeedbackModal;
+    // Logout logic
+    document.getElementById('logoutBtn').onclick = function() {
+        sessionStorage.clear();
+        window.location.href = '/';
+    };
+    </script>
     <!-- Emergency Modal -->
     <div id="emergencyModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
         <div style="background:#fff; padding:32px 24px; border-radius:8px; box-shadow:0 2px 8px #aaa; text-align:center; min-width:250px;">
