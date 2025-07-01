@@ -126,6 +126,7 @@ flowchart TD
     Nurse --> End
     Resident --> End
 ```
+
 ## Detailed System Flowchart for Admin Actions
 
 ```mermaid
@@ -182,7 +183,7 @@ graph TD
     L --> O[Request assistance]
 ```
 
-## System Detailed Flowchart
+<!-- ## System Detailed Flowchart
 
 ```mermaid
 flowchart TD
@@ -216,4 +217,4 @@ flowchart TD
     AB --> AC[Show Success/Failure]
     B -- Analytics --> AD[View Analytics]
 ```
-
+ -->
