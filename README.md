@@ -126,6 +126,41 @@ flowchart TD
     Nurse --> End
     Resident --> End
 ```
+## Detailed System Flowchart for Admin Actions
+
+```mermaid
+flowchart TD
+    A[Admin logs in] --> B{Select Menu Option}
+    B -- Resident Onboarding --> C[Fill Resident Details]
+    C --> D[Submit]
+    D --> E[Resident Added]
+    B -- Nurse Onboarding --> F[Fill Nurse Details]
+    F --> G[Submit]
+    G --> H[Nurse Added]
+    B -- Search/Edit Resident --> I[Search Resident]
+    I --> J{Resident Found?}
+    J -- Yes --> K[Edit Details]
+    K --> L[Save Changes]
+    L --> M[Resident Updated]
+    J -- No --> N[Show Not Found]
+    B -- Search/Edit Nurse --> O[Search Nurse]
+    O --> P{Nurse Found?}
+    P -- Yes --> Q[Edit Details]
+    Q --> R[Save Changes]
+    R --> S[Nurse Updated]
+    P -- No --> T[Show Not Found]
+    B -- Reset Password --> U[Enter Username]
+    U --> V[Reset Password]
+    V --> W[Show Temp Password]
+    B -- Alerts --> X[View Alerts]
+    X --> Y[Take Action]
+    B -- Feedback --> Z[View Feedback]
+    B -- Data Backup --> AA[Click Backup Button]
+    AA --> AB[Backup to AWS S3]
+    AB --> AC[Show Success/Failure]
+    B -- Analytics --> AD[View Analytics]
+```
+
 
 ## Decision Tree (User Actions)
 
@@ -145,5 +180,40 @@ graph TD
     L --> M[Request food]
     L --> N[Submit feedback]
     L --> O[Request assistance]
+```
+
+## System Detailed Flowchart
+
+```mermaid
+flowchart TD
+    A[Admin logs in] --> B{Select Menu Option}
+    B -- Resident Onboarding --> C[Fill Resident Details]
+    C --> D[Submit]
+    D --> E[Resident Added]
+    B -- Nurse Onboarding --> F[Fill Nurse Details]
+    F --> G[Submit]
+    G --> H[Nurse Added]
+    B -- Search/Edit Resident --> I[Search Resident]
+    I --> J{Resident Found?}
+    J -- Yes --> K[Edit Details]
+    K --> L[Save Changes]
+    L --> M[Resident Updated]
+    J -- No --> N[Show Not Found]
+    B -- Search/Edit Nurse --> O[Search Nurse]
+    O --> P{Nurse Found?}
+    P -- Yes --> Q[Edit Details]
+    Q --> R[Save Changes]
+    R --> S[Nurse Updated]
+    P -- No --> T[Show Not Found]
+    B -- Reset Password --> U[Enter Username]
+    U --> V[Reset Password]
+    V --> W[Show Temp Password]
+    B -- Alerts --> X[View Alerts]
+    X --> Y[Take Action]
+    B -- Feedback --> Z[View Feedback]
+    B -- Data Backup --> AA[Click Backup Button]
+    AA --> AB[Backup to AWS S3]
+    AB --> AC[Show Success/Failure]
+    B -- Analytics --> AD[View Analytics]
 ```
 
