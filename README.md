@@ -131,37 +131,60 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Admin logs in] --> B{Select Menu Option}
-    B -- Resident Onboarding --> C[Fill Resident Details]
-    C --> D[Submit]
-    D --> E[Resident Added]
-    B -- Nurse Onboarding --> F[Fill Nurse Details]
-    F --> G[Submit]
-    G --> H[Nurse Added]
-    B -- Search/Edit Resident --> I[Search Resident]
-    I --> J{Resident Found?}
-    J -- Yes --> K[Edit Details]
-    K --> L[Save Changes]
-    L --> M[Resident Updated]
-    J -- No --> N[Show Not Found]
-    B -- Search/Edit Nurse --> O[Search Nurse]
-    O --> P{Nurse Found?}
-    P -- Yes --> Q[Edit Details]
-    Q --> R[Save Changes]
-    R --> S[Nurse Updated]
-    P -- No --> T[Show Not Found]
-    B -- Reset Password --> U[Enter Username]
-    U --> V[Reset Password]
-    V --> W[Show Temp Password]
-    B -- Alerts --> X[View Alerts]
-    X --> Y[Take Action]
-    B -- Feedback --> Z[View Feedback]
-    B -- Data Backup --> AA[Click Backup Button]
-    AA --> AB[Backup to AWS S3]
-    AB --> AC[Show Success/Failure]
-    B -- Analytics --> AD[View Analytics]
+    subgraph ExcelDB[Excel Data Store]
+        excel1[(Residents.xlsx)]
+        excel2[(Nurses.xlsx)]
+        excel3[(Users.xlsx)]
+        excel4[(Alerts.xlsx)]
+        excel5[(Food_Alerts.xlsx)]
+        excel6[(Feedback.xlsx)]
+    end
+    subgraph Cloud[Cloud: AWS S3]
+        cloud1((Backup))
+    end
+    A([fa:fa-user Admin logs in]) --> B{Select Menu Option}
+    B -- Resident Onboarding --> C([fa:fa-keyboard-o Fill Resident Details])
+    C --> D([fa:fa-sign-in Submit])
+    D --> excel1
+    D --> excel3
+    D --> E([fa:fa-desktop Resident Added Display])
+    B -- Nurse Onboarding --> F([fa:fa-keyboard-o Fill Nurse Details])
+    F --> G([fa:fa-sign-in Submit])
+    G --> excel2
+    G --> excel3
+    G --> H([fa:fa-desktop Nurse Added Display])
+    B -- Search/Edit Resident --> I([fa:fa-keyboard-o Search Resident])
+    I --> excel1
+    excel1 --> J{Resident Found?}
+    J -- Yes --> K([fa:fa-keyboard-o Edit Details])
+    K --> L([fa:fa-sign-in Save Changes])
+    L --> excel1
+    L --> M([fa:fa-desktop Resident Updated Display])
+    J -- No --> N([fa:fa-desktop Show Not Found])
+    B -- Search/Edit Nurse --> O([fa:fa-keyboard-o Search Nurse])
+    O --> excel2
+    excel2 --> P{Nurse Found?}
+    P -- Yes --> Q([fa:fa-keyboard-o Edit Details])
+    Q --> R([fa:fa-sign-in Save Changes])
+    R --> excel2
+    R --> S([fa:fa-desktop Nurse Updated Display])
+    P -- No --> T([fa:fa-desktop Show Not Found])
+    B -- Reset Password --> U([fa:fa-keyboard-o Enter Username])
+    U --> V([fa:fa-sign-in Reset Password])
+    V --> excel3
+    V --> W([fa:fa-desktop Show Temp Password])
+    B -- Alerts --> X([fa:fa-desktop View Alerts])
+    X --> excel4
+    X --> Y([fa:fa-desktop Take Action])
+    B -- Feedback --> Z([fa:fa-desktop View Feedback])
+    Z --> excel6
+    B -- Data Backup --> AA([fa:fa-cloud Click Backup Button])
+    AA --> cloud1
+    cloud1 --> AB([fa:fa-desktop Show Success/Failure])
+    B -- Analytics --> AD([fa:fa-desktop View Analytics])
+    AD --> excel4
+    AD --> excel5
 ```
-
 
 ## Decision Tree (User Actions)
 
