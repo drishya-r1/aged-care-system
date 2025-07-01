@@ -11,61 +11,139 @@ aged-care-assistance-system
 │   ├── database
 │   │   └── excel_manager.py
 │   ├── routes
-│   │   └── emergency.py
+│   │   ├── admin
+│   │   │   └── admin.py
+│   │   ├── nurses
+│   │   │   └── nurseportal.py
+│   │   └── residents
+│   │       ├── emergency.py
+│   │       ├── food_requests.py
+│   │       └── resident_details.py
 │   └── requirements.txt
 ├── frontend
-│   ├── index.html
+│   ├── html
+│   │   ├── admin.html
+│   │   ├── login.html
+│   │   ├── nurseportaltwo.html
+│   │   ├── ondemand_food.html
+│   │   └── residents_index.html
 │   ├── css
 │   │   └── styles.css
 │   └── js
-│       └── main.js
+│       ├── main.js
+│       ├── login_hash.js
+│       ├── admin_alerts.js
+│       └── alerts_analytics.js
 ├── data
-│   └── residents.xlsx
+│   ├── residents.xlsx
+│   ├── nurses.xlsx
+│   ├── users.xlsx
+│   ├── alerts.xlsx
+│   ├── food_alerts.xlsx
+│   └── feedback.xlsx
 └── README.md
 ```
 
 ## Features
-- **Emergency Alerts**: Quickly log incidents and send alerts to nursing staff.
-- **Resident Management**: Manage resident records, health information, and incident reports using an Excel database.
-- **User-Friendly Interface**: A responsive frontend that allows easy interaction for staff members.
+- **Emergency Alerts**: Quickly log incidents and send alerts to nursing staff for rapid response.
+- **Resident Management**: Onboard, search, view, and edit resident records, health information, and incident reports using an Excel database.
+- **Nurse Management**: Onboard, search, view, and edit nurse records and unit allocations.
+- **Food Requests**: Residents can request on-demand food; nurses can view and serve food requests.
+- **User Management**: Admins can manage user accounts, reset passwords, and activate/deactivate users.
+- **Data Backup**: Admins can back up all system data to an AWS S3 bucket with a single click.
+- **Analytics & Reporting**: View statistics and analytics on alerts, food requests, and system usage.
+- **Resident Feedback**: Collect and review feedback from residents for continuous improvement.
+- **User-Friendly Interface**: Responsive frontend for easy interaction by staff, nurses, and admins.
 
 ## Setup Instructions
+Pre-requisites:
+- Python 3.x installed
+- Flask installed (`pip install Flask`)
 
-1. **Clone the Repository**:
+1. **Clone the Repository to a folder in your local machine**:
    ```bash
-   git clone <repository-url>
-   cd aged-care-assistance-system
+   git clone https://github.com/drishya-r1/aged-care-system.git
+   cd aged-care-system
    ```
-
 2. **Install Backend Dependencies**:
    Navigate to the `backend` directory and install the required packages:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+
+   ```
+
+3. **Install Backend Dependencies**:
+   Install the required packages:
    ```bash
    pip install -r backend/requirements.txt
    ```
 
-3. **Run the Backend**:
+4. **Run the Backend**:
    Start the Flask application from the project root:
    ```bash
-   python backend/app.py
+   python3 -m backend.app
    ```
-   This will start the backend server (usually on `http://127.0.0.1:5000`).
+   This will start the backend and frontend server (usually on `http://127.0.0.1:5000`).
+   Then visit [http://127.0.0.1:5000](http://127.0.0.1:5000)  in your browser.
 
-4. **Open the Frontend**:
-   - **Recommended:** From the `frontend` directory, start a simple HTTP server:
-     ```bash
-     python -m http.server 8000
-     ```
-     Then visit [http://localhost:8000](http://localhost:8000) in your browser.
-   - **Alternatively:** Open `frontend/index.html` directly in a web browser (some features may not work due to browser security restrictions).
+## System Usage
 
-## Usage Guidelines
-- Use the buttons on the frontend to log incidents or request assistance.
-- Ensure that the `residents.xlsx` file is properly formatted to store resident data and incident reports.
-- The frontend communicates with the backend for data operations; ensure both are running simultaneously.
-- If you encounter CORS errors, enable CORS in the Flask backend (e.g., with `flask-cors`).
+### Admin
+- Log in with your admin credentials.
+- Use the sidebar to onboard residents and nurses, search/edit records, reset passwords, view alerts, review feedback, and perform data backup to AWS S3.
+- Use the Analytics section to view system statistics and reports.
 
-## Contributing
-Contributions are welcome! Please submit a pull request or open an issue for any enhancements or bug fixes.
+### Nurse
+- Log in with your nurse credentials.
+- View and attend to emergency alerts and food requests for your assigned units.
+- Update alert statuses as you respond to requests.
 
-## License
-This project is licensed under the MIT License.
+### Resident
+- Log in with your resident credentials.
+- Request food on demand and submit feedback.
+- View your own information and request assistance as needed.
+
+All actions are performed through a user-friendly web interface accessible via your browser at [http://127.0.0.1:5000](http://127.0.0.1:5000).
+
+## System Flowchart
+
+```mermaid
+flowchart TD
+    Start([Start])
+    Login[User Login]
+    Decision{User Type?}
+    Admin[Admin Portal]
+    Nurse[Nurse Portal]
+    Resident[Resident Portal]
+    End([End])
+
+    Start --> Login --> Decision
+    Decision -- Admin --> Admin
+    Decision -- Nurse --> Nurse
+    Decision -- Resident --> Resident
+    Admin --> End
+    Nurse --> End
+    Resident --> End
+```
+
+## Decision Tree (User Actions)
+
+```mermaid
+graph TD
+    A[User logs in] --> B{User type}
+    B -- Admin --> C[Show admin menu]
+    C --> D[Onboard Resident/Nurse]
+    C --> E[Search/Edit Resident/Nurse]
+    C --> F[View Alerts/Feedback]
+    C --> G[Backup Data]
+    C --> H[View Analytics]
+    B -- Nurse --> I[Show nurse dashboard]
+    I --> J[View/respond to alerts]
+    I --> K[View/respond to food requests]
+    B -- Resident --> L[Show resident dashboard]
+    L --> M[Request food]
+    L --> N[Submit feedback]
+    L --> O[Request assistance]
+```
+

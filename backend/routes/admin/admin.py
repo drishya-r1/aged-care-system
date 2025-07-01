@@ -4,6 +4,9 @@ import random
 import string
 import os
 import pandas as pd
+import boto3
+import zipfile
+from datetime import datetime
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -170,3 +173,21 @@ def toggle_user_active():
         df.to_excel(users_file, index=False)
         return jsonify({'success': True})
     return jsonify({'success': False, 'message': 'User not found'})
+
+@admin_bp.route('/api/admin/backup', methods=['POST'])
+def backup_data():
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data')
+    backup_name = f"backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
+    backup_path = os.path.join(data_dir, backup_name)
+    with zipfile.ZipFile(backup_path, 'w') as backup_zip:
+        for filename in os.listdir(data_dir):
+            if filename.endswith('.xlsx'):
+                backup_zip.write(os.path.join(data_dir, filename), filename)
+    s3 = boto3.client('s3')
+    bucket_name = 'aged-care-system-data-backup' 
+    try:
+        s3.upload_file(backup_path, bucket_name, backup_name)
+        os.remove(backup_path)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500

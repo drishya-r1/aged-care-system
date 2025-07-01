@@ -291,6 +291,7 @@
             <button class="menu-item" id="searchNurseMenu">Search/View/Edit Nurse Details</button>
             <button class="menu-item" id="resetPwdMenu">Reset Password</button>
             <button class="menu-item" id="alertsMenu">Alerts</button>
+            <button class="menu-item" id="dataBackupMenu">Data Backup</button>
             <!-- Add more menu items here as needed -->
         </nav>
         <div class="main-content">
@@ -485,6 +486,13 @@
                 <h2 style="margin-top:40px;color:#1976d2;">Resident Feedback</h2>
                 <div id="feedbackSection" style="overflow-x:auto;margin-bottom:32px;"></div>
             </div>
+            <!-- Data Backup Section (hidden by default) -->
+            <div id="dataBackupSection" style="display:none; max-width:400px; margin:40px auto; background:#fff; border-radius:12px; box-shadow:0 2px 12px #e0eafc; padding:32px; text-align:center;">
+                <h2>Data Backup</h2>
+                <p>Backup all system data to AWS S3 bucket.</p>
+                <button id="backupDataBtn" style="padding:12px 32px; background:#2a5298; color:#fff; border:none; border-radius:6px; font-size:1.1em; cursor:pointer;">Backup Data</button>
+                <div id="backupStatusMsg" style="margin-top:18px; font-size:1.08em;"></div>
+            </div>
         </div>
     </div>
     <div class="footer-ribbon">
@@ -506,6 +514,8 @@
         const resetPwdSection = document.getElementById('resetPwdSection');
         const alertsMenu = document.getElementById('alertsMenu');
         const alertsSection = document.getElementById('alertsSection');
+        const dataBackupMenu = document.getElementById('dataBackupMenu');
+        const dataBackupSection = document.getElementById('dataBackupSection');
 
         // Fix: Always remove 'active' from all menu items before adding to the selected one
         function setActiveMenu(menuBtn) {
@@ -546,8 +556,14 @@
                 if (typeof loadAdminAlerts === 'function') loadAdminAlerts();
             }, 0);
         };
+        dataBackupMenu.onclick = function() {
+            hideAllSections();
+            dataBackupSection.style.display = 'block';
+            setActiveMenu(dataBackupMenu);
+        };
 
         function hideAllSections() {
+            //document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
             document.getElementById('residentSection').style.display = 'none';
             document.getElementById('nurseSection').style.display = 'none';
             document.getElementById('searchResidentSection').style.display = 'none';
@@ -558,6 +574,7 @@
             document.getElementById('editResidentSection').style.display = 'none';
             document.getElementById('editNurseSection').style.display = 'none';
             document.getElementById('alertsSection').style.display = 'none';
+            document.getElementById('dataBackupSection').style.display = 'none';
         }
 
         // Onboard Resident
@@ -897,6 +914,36 @@
         window.addEventListener('DOMContentLoaded', function() {
             if (typeof loadFeedback === 'function') loadFeedback();
         });
+
+        // Show/Hide Data Backup section
+        document.getElementById('dataBackupMenu').onclick = function() {
+            // Hide all main content sections
+            //document.querySelectorAll('.main-section').forEach(s => s.style.display = 'none');
+            hideAllSections();
+            // Show only the Data Backup section
+            document.getElementById('dataBackupSection').style.display = 'block';
+            setActiveMenu(dataBackupMenu);
+        };
+        // Backup Data button logic
+        document.getElementById('backupDataBtn').onclick = async function() {
+            const msg = document.getElementById('backupStatusMsg');
+            msg.textContent = "Backing up data...";
+            msg.style.color = "#1976d2";
+            try {
+                const res = await fetch('/api/admin/backup', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    msg.textContent = "Backup successful!";
+                    msg.style.color = "#388e3c";
+                } else {
+                    msg.textContent = "Backup failed.";
+                    msg.style.color = "#d32f2f";
+                }
+            } catch (e) {
+                msg.textContent = "Backup failed.";
+                msg.style.color = "#d32f2f";
+            }
+        };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../js/alerts_analytics.js"></script>
